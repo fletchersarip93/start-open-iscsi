@@ -1,0 +1,14 @@
+source /usr/sbin/start-systemd-namespace
+
+sudo /etc/init.d/open-iscsi start
+
+export WSLHOSTIP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
+
+# Print list of nodes for information to user
+echo "Nodes available:"
+sudo iscsiadm -m discovery -t st -p $WSLHOSTIP
+sudo iscsiadm -m node
+
+# Login 
+echo "Attempting to login..."
+sudo iscsiadm -m node --targetname $1 --portal "$WSLHOSTIP:$2" --login
